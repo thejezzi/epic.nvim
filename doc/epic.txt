@@ -1,0 +1,90 @@
+*epic.txt*  Convert and inspect date/time strings in any format
+
+Author: Florian Hauptmann
+License: MIT
+
+==============================================================================
+1. Intro                                     *epic*
+
+Epic is a Neovim plugin that recognizes a date/time value under your
+cursor, shows the same instant in every supported format via a hover float,
+and lets you convert a value (or visual selection) into any of those formats
+in place.
+
+It works with ISO-8601/RFC-3339, Unix timestamps, RFC-2822, HTTP-Date and
+German/US local date formats. Strings without a timezone are interpreted in
+your local timezone.
+
+==============================================================================
+2. Quick start                               *epic-quickstart*
+
+With lazy.nvim: >
+  {
+    "thejezzi/epic.nvim",
+    opts = {},
+  }
+
+Minimal setup: >
+  require("epic").setup({})
+
+Suggested keymaps: >
+  vim.keymap.set("n", "<leader>eh", "<cmd>EpicHover<cr>")
+  vim.keymap.set("n", "<leader>ec", "<cmd>EpicConvert<cr>")
+  vim.keymap.set("v", "<leader>ec", ":EpicConvert<cr>")
+
+==============================================================================
+3. Commands                                  *epic-commands*
+
+*:EpicHover*
+  Open a floating window listing every configured format for the time value
+  under the cursor. Close with `q`, `<Esc>` or by moving the cursor.
+
+*:EpicConvert* [format]            *:EpicConvert*
+  Convert the value under the cursor (normal mode) or the last visual
+  selection (when invoked with a range) into `format`.
+  Without an argument a picker opens to choose the target format.
+  Valid formats: local, utc, iso8601, rfc3339, unix_seconds,
+  unix_milliseconds, rfc2822, http_date, de, relative.
+
+==============================================================================
+4. Configuration                             *epic-config*
+
+Default values: >
+  require("epic").setup({
+    local_timezone = nil,            -- nil = system timezone
+    ambiguous_date_order = "reject", -- "reject" | "dmy" | "mdy"
+    formats = {
+      "local", "utc", "iso8601", "rfc3339",
+      "unix_seconds", "unix_milliseconds", "rfc2822", "http_date",
+      "relative",
+    },
+    hover = { border = "rounded", close_on_cursor_move = true },
+    picker = { border = "rounded" },
+    create_commands = true,
+  })
+
+*epic-ambiguous*
+  Slash dates like `05/06/2025` cannot be told apart as day/month or
+  month/day. With `ambiguous_date_order = "reject"` (default) the hover shows
+  both candidates and `:EpicConvert` asks you to pick one. Use `"dmy"` or
+  `"mdy"` to resolve silently.
+
+==============================================================================
+5. Supported formats                         *epic-formats*
+
+Input (auto-detected)~
+  - 2025-05-20T14:30:00Z           (RFC-3339 / ISO-8601)
+  - 2025-05-20T14:30:00+02:00
+  - 2025-05-20 14:30:00            (local)
+  - 2025-05-20                     (date only, local)
+  - 1716208200 / 1716208200123     (Unix seconds / milliseconds)
+  - @1716208200
+  - Tue, 20 May 2025 14:30:00 +0200 (RFC-2822)
+  - Tue, 20 May 2025 12:30:00 GMT   (HTTP-Date)
+  - 20.05.2025 [14:30[:00]]         (German)
+  - 05/20/2025 [14:30[:00]]         (US / slash, ambiguous)
+
+Output~
+  Any of the above plus a relative phrase ("in 2 hours", "5 minutes ago").
+
+ vim:tw=78:ts=8:ft=help:norl:
