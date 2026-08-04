@@ -64,19 +64,21 @@ local function epoch_with_offset(t, offset, source)
 end
 
 local function parse_iso(text)
-  -- try with fractional seconds first, then without
-  local y, mo, d, h, mi, s, frac, off = text:match(
-    "^(%d%d%d%d)%-(%d%d)%-(%d%d)[Tt ](%d%d):(%d%d):(%d%d)(%.%d+)([Zz%+%-%d:]*)$"
-  )
-  if not y then
-    y, mo, d, h, mi, s, off = text:match(
-      "^(%d%d%d%d)%-(%d%d)%-(%d%d)[Tt ](%d%d):(%d%d):(%d%d)([Zz%+%-%d:]*)$"
-    )
-    frac = nil
-  end
-  if not y then
+  -- Capture the fixed prefix (date + time) and optional fractional seconds,
+  -- then interpret the trailing timezone designator separately so we can
+  -- accept "Z", "+HH:MM", "+HHMM" as well as the literal words "UTC"/"GMT"
+  -- (e.g. "2025-05-20 12:30:00 UTC" -- which this plugin itself emits).
+  local prefix = text:match("^(%d%d%d%d%-%d%d%-%d%d[Tt ]%d%d:%d%d:%d%d)")
+  if not prefix then
     return nil
   end
+  local y, mo, d, h, mi, s = prefix:match(
+    "^(%d+)%-(%d+)%-(%d+)[Tt ](%d+):(%d+):(%d+)$"
+  )
+  local rest = text:sub(#prefix + 1)
+  local frac = rest:match("^(%.%d+)")
+  local tail = frac and rest:sub(#frac + 1) or rest
+
   local t = {
     year = tonumber(y),
     month = tonumber(mo),
@@ -97,19 +99,21 @@ local function parse_iso(text)
       ms = tonumber(f) * (10 ^ (3 - #f))
     end
   end
+
   local offset, source
-  if off and off ~= "" then
-    if off == "Z" or off == "z" then
-      offset, source = 0, "utc"
-    else
-      offset = util.parse_offset(off)
-      if not offset then
-        return nil
-      end
-      source = "explicit"
-    end
-  else
+  if tail == "" then
     offset, source = util.local_offset_seconds(), "local"
+  elseif tail == "Z" or tail == "z" then
+    offset, source = 0, "utc"
+  elseif tail:match("^ ?[Uu][Tt][Cc]$") or tail:match("^ ?[Gg][Mm][Tt]$") then
+    -- literal timezone word: treat UTC/GMT as offset 0
+    offset, source = 0, "utc"
+  else
+    local o = util.parse_offset(tail)
+    if not o then
+      return nil
+    end
+    offset, source = o, "explicit"
   end
   return make_value(epoch_with_offset(t, offset, source), ms, offset, source, text, "iso8601")
 end

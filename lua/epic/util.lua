@@ -70,6 +70,9 @@ function M.get_text_under_cursor()
   local cursor = col + 1 -- nvim col is 0-indexed
 
   local patterns = {
+    -- ISO with literal UTC/GMT word suffix first, so the word is not truncated.
+    "%d%d%d%d%-%d%d%-%d%d[Tt ]%d%d:%d%d:%d%d[%.%d]* ?[Uu][Tt][Cc]",
+    "%d%d%d%d%-%d%d%-%d%d[Tt ]%d%d:%d%d:%d%d[%.%d]* ?[Gg][Mm][Tt]",
     "%d%d%d%d%-%d%d%-%d%d[Tt ]%d%d:%d%d:%d%d[%.%d]*[Zz%+%-%d:]*",
     "@?%d%d%d%d%d%d%d%d%d%d+",
     "%a+,%s+%d%d%s+%a+%s+%d%d%d%d%s+%d%d:%d%d:%d%d%s+[%+%-]?%a+",

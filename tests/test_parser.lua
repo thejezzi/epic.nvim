@@ -112,3 +112,32 @@ test("round-trips offset equivalence", function()
 	local b = parser.parse("2025-05-20T14:30:00+02:00")
 	assert_eq(a.epoch_seconds, b.epoch_seconds, "same instant")
 end)
+
+test("parses literal 'UTC' word suffix as UTC", function()
+	for _, t in ipairs({
+		"2025-05-20 12:30:00 UTC",
+		"2025-05-20T12:30:00 UTC",
+		"2025-05-20T12:30:00UTC",
+	}) do
+		local v = parser.parse(t)
+		assert_eq(v ~= nil, true, "should parse: " .. t)
+		assert_eq(v.timezone_source, "utc", "source for " .. t)
+		assert_eq(v.timezone_offset_seconds, 0, "offset for " .. t)
+		assert_eq(v.epoch_seconds, REF_2025_05_20_1230_UTC, "epoch for " .. t)
+	end
+end)
+
+test("parses literal 'GMT' word suffix as UTC", function()
+	local v = parser.parse("2025-05-20 12:30:00 GMT")
+	assert_eq(v ~= nil, true)
+	assert_eq(v.timezone_source, "utc")
+	assert_eq(v.epoch_seconds, REF_2025_05_20_1230_UTC)
+end)
+
+test("round-trips the plugin's own format_utc output", function()
+	local formats = require("epic.formats")
+	local orig = parser.parse("2025-05-20T12:30:00Z")
+	local back = parser.parse(formats.format_utc(orig))
+	assert_eq(back ~= nil, true, "re-parse of format_utc output")
+	assert_eq(back.epoch_seconds, orig.epoch_seconds, "epoch preserved")
+end)
