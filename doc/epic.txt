@@ -39,7 +39,7 @@ Suggested keymaps: >
   Open a floating window listing every configured format for the time value
   under the cursor. Close with `q`, `<Esc>` or by moving the cursor.
 
-*:EpicConvert* [format]            *:EpicConvert*
+*:EpicConvert* [format]            
   Convert the value under the cursor (normal mode) or the last visual
   selection (when invoked with a range) into `format`.
   Without an argument a picker opens to choose the target format.
