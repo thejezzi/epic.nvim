@@ -306,6 +306,12 @@ local function parse_slash_date(text)
 	return nil
 end
 
+function M.now_local()
+	local t = os.date("*t")
+	local epoch = os.time(t)
+	return make_value(epoch, 0, util.offset_at(epoch), "local", "", "local")
+end
+
 M.parsers = {
 	parse_iso,
 	parse_iso_date,

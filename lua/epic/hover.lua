@@ -112,19 +112,11 @@ end
 
 function M.insert_now()
 	local primary = config.get().primary_format
-	local date = os.date("*t")
-	local iso8601 =
-		string.format("%04d-%02d-%02dT%02d:%02d:%02d", date.year, date.month, date.day, date.hour, date.min, date.sec)
 	if not formats.formatters[primary] then
 		util.notify("invalid primary formatter: " .. primary, vim.log.levels.ERROR)
 		return
 	end
-	local parsed = parser.parse(iso8601)
-	if parsed == nil then
-		util.notify("unable to parse now as iso8601", vim.log.levels.ERROR)
-		return
-	end
-	local formatted = formats.format_one(parsed, primary)
+	local formatted = formats.format_one(parser.now_local(), primary)
 	if formatted == nil then
 		util.notify("unable to format now to the desired primary format", vim.log.levels.ERROR)
 		return

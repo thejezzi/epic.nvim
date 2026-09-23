@@ -17,6 +17,8 @@ M.defaults = {
 		"rfc2822",
 		"http_date",
 		"relative",
+		"de",
+		"de_date",
 	},
 	hover = {
 		border = "rounded",

@@ -100,6 +100,12 @@ function M.format_de(v)
 	return string.format("%02d.%02d.%04d %02d:%02d:%02d", t.day, t.month, t.year, t.hour, t.min, t.sec)
 end
 
+--- @param v types.Date
+function M.format_de_date(v)
+	local t = local_table(v.epoch_seconds)
+	return string.format("%02d.%02d.%04d", t.day, t.month, t.year)
+end
+
 function M.format_relative(v)
 	local now = os.time()
 	local diff = v.epoch_seconds - now
@@ -135,6 +141,7 @@ M.formatters = {
 	rfc2822 = { label = "RFC-2822", fn = M.format_rfc2822 },
 	http_date = { label = "HTTP-Date", fn = M.format_http_date },
 	de = { label = "DE", fn = M.format_de },
+	de_date = { label = "DE Date", fn = M.format_de_date },
 	relative = { label = "Relative", fn = M.format_relative },
 }
 
