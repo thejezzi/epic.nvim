@@ -2,6 +2,7 @@ local config = require("epic.config")
 
 local M = {}
 
+---@param opts? epic.Config
 function M.setup(opts)
   local cfg = config.setup(opts)
   if cfg.create_commands then

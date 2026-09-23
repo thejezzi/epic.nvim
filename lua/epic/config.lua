@@ -1,5 +1,6 @@
 local M = {}
 
+--- @type epic.Config
 M.defaults = {
 	-- nil uses the system local timezone.
 	local_timezone = nil,
@@ -33,6 +34,7 @@ M.defaults = {
 
 M.options = nil
 
+--- @param opts? epic.Config
 function M.setup(opts)
 	M.options = vim.tbl_deep_extend("force", vim.deepcopy(M.defaults), opts or {})
 	return M.options
