@@ -155,6 +155,8 @@ function M.format_all(v)
 end
 
 --- Format a value into a single target format name.
+--- @param v types.Date
+--- @return string|nil
 function M.format_one(v, name)
 	local f = M.formatters[name]
 	if not f then

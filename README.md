@@ -10,6 +10,8 @@ value (or visual selection) into any of those formats in place.
 
 - **Hover** (`:EpicHover`): floating window listing every format for the
   value under the cursor.
+- **Insert now**: if `:EpicHover` finds no time value under the cursor, it
+  inserts the current time in `primary_format` instead.
 - **Convert** (`:EpicConvert [format]`): replace the cursor value or visual
   selection with another format; undo-friendly.
 - **Format picker** when no target is given.
@@ -52,13 +54,16 @@ require("epic").setup({
   },
   hover = { border = "rounded", close_on_cursor_move = true },
   picker = { border = "rounded" },
+  primary_format = "local",       -- format used when inserting the current time
 })
 ```
 
 ## Usage
 
 ```vim
-:EpicHover                  " show all formats under the cursor
+:EpicHover                  " show all formats under the cursor;
+                            " with no time value there, insert now in
+                            " primary_format
 :EpicConvert                " pick a target format, then replace
 :EpicConvert iso8601        " replace cursor value with ISO-8601
 :EpicConvert unix_seconds    " replace with Unix seconds

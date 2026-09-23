@@ -39,6 +39,10 @@ Suggested keymaps: >
   Open a floating window listing every configured format for the time value
   under the cursor. Close with `q`, `<Esc>` or by moving the cursor.
 
+  If no time value is found under the cursor, the current time is inserted
+  in `primary_format` (see |epic-primary-format|) at the cursor position
+  instead.
+
 *:EpicConvert* [format]            
   Convert the value under the cursor (normal mode) or the last visual
   selection (when invoked with a range) into `format`.
@@ -61,7 +65,13 @@ Default values: >
     hover = { border = "rounded", close_on_cursor_move = true },
     picker = { border = "rounded" },
     create_commands = true,
+    primary_format = "local",
   })
+
+*epic-primary-format*
+  Format used when |:EpicHover| inserts the current time because no time
+  value was found under the cursor. Any output format name works, e.g.
+  "local", "utc", "iso8601", "unix_seconds".
 
 *epic-ambiguous*
   Slash dates like `05/06/2025` cannot be told apart as day/month or
